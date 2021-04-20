@@ -13,7 +13,6 @@ interface PrivateRouteProps {
 export const PrivateRoute = ({ component: Component, ...rest}: PrivateRouteProps
     ) => {
         const { currentUser, authLoading } = useAuth()
-        console.log(authLoading, '=======> privateroute')
     if (authLoading) {
         return <LoadingScreen />
     } else {
@@ -21,7 +20,6 @@ export const PrivateRoute = ({ component: Component, ...rest}: PrivateRouteProps
             <Route
                 {...rest}
                 render={props => {
-                   console.log(currentUser)
                    return currentUser? <Component {...props}></Component> : <Redirect to='/login'/>   
                 }}         
                 >

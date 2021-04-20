@@ -15,7 +15,7 @@ const useStyles = makeStyles({
 
 const Login = () => {
     const { login } = useAuth()
-    const [, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const classes = useStyles();
     const history = useHistory();
@@ -37,8 +37,10 @@ const Login = () => {
                 await login(values.email, values.password);
                 setError('');
                 setLoading(true);
+                console.log(loading)
                 actions.setStatus({ loginSuccess: 'Signing in...'});
             } catch (error) { 
+                console.log(error);
                 actions.setStatus({ loginError: 'Something went wrong' });
             } finally {
                 setLoading(false);
@@ -46,7 +48,7 @@ const Login = () => {
             }
         }, []
     );
-        console.log(error);
+
     return( 
         <>
             <Typography variant="h4" gutterBottom>Login</Typography>

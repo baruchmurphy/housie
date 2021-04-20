@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface GroceryItemProps {
     item: {
-        text: string, 
+        item: string, 
         complete: boolean
     }
 }
@@ -33,11 +33,10 @@ const GroceryItem = ({item}: GroceryItemProps) => {
           <FormGroup>
             <FormControlLabel
               control={<Checkbox checked={checked} onChange={() => setChecked(!checked)} />}
-              label={item.text}
+              label={item.item}
             />
             </FormGroup>
             </FormControl>
-            {/* {item.text +  item.complete} */}
         </>
     )
 }

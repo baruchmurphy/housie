@@ -1,7 +1,7 @@
 import React from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Image from './images.png';
-import { styled, Box, Container } from "@material-ui/core";
+import { styled, Box } from "@material-ui/core";
 
 const LoadingScreen = () => {
     const LoadingContainer = styled('div')(() => ({

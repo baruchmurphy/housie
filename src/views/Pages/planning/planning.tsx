@@ -11,19 +11,19 @@ const useStyles = makeStyles({
     }
 });
 
-const Scheduling = () => {
+const Planning = () => {
     const classes = useStyles();
 
     return(
         <>
-            <h2>Scheduling</h2>
+            <h2>Planning</h2>
             <Card className={classes.card}>
                 <CardContent>
-                     Scheduling
+                     Planning
                 </CardContent>
             </Card>
         </>
     );
 };
 
-export default Scheduling;
+export default Planning;

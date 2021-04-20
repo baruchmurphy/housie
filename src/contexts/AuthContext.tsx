@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, useCallback} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { auth } from '../services/firebase';
 import { firestore } from '../services/firebase';
 
@@ -16,6 +16,7 @@ export function AuthProvider({ children }: any) {
     const [authLoading, setAuthLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState<any>();
     const [profile, setProfile] = useState({});
+    const [lists, setLists] = useState<any>(null);
 
     const createProfile = async (user: any) => {
         try {
@@ -30,8 +31,25 @@ export function AuthProvider({ children }: any) {
     };
 
     const getProfile = async (id: string) => {
-        return firestore.collection('Users').doc(id).get().then((userProfile) => setProfile(userProfile))
+        return firestore.collection('Users').doc(id).get().then((userProfile) => { 
+            setProfile(userProfile)
+            console.log(userProfile)
+        })
     } 
+
+    // const newList = async (info: any) => {
+    //     return firestore.collection('Lists').doc(id).get()
+    // }
+
+    const getLists = async (createdBy: string) => {
+        const listData = await firestore.collection('Lists').where('createdBy', '==', createdBy).get();
+        let returnedData: any = {};
+        listData.forEach((doc) => {
+            returnedData = doc;
+        })
+        console.log('======>', returnedData.data())
+        setLists(returnedData.data())
+    };
 
     const signup = async(email: string, password: string) => {
         const { user }:any = await auth.createUserWithEmailAndPassword(email, password);
@@ -91,15 +109,16 @@ export function AuthProvider({ children }: any) {
             if (user) {
                 setCurrentUser(user)
                 setAuthLoading(false)
+                if(!lists) {
+                    getLists('poggers')
+                } 
             } else {
                 setCurrentUser(null)
                 setAuthLoading(false)
             }
-            console.log('========> ggez')
         });
-        console.log(authLoading)
         return unsubscribe
-    }, [authLoading]);
+    }, [authLoading, lists]);
 
 
 
@@ -107,6 +126,8 @@ export function AuthProvider({ children }: any) {
         currentUser,
         profile,
         authLoading,
+        lists,
+        setLists,
         login,
         signup,
         logout, 

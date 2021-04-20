@@ -4,10 +4,10 @@ import { Formik, Form } from "formik";
 import * as Yup from 'yup'; 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import GroceryItem from './GroceryItem';
 import FormikAlert from '../../../../formik/FormikAlert';
 import FormikInput from '../../../../formik/FormikInput';
 import { firestore } from '../../../../services/firebase';
+import { useAuth } from '../../../../contexts/AuthContext';
 
 const useStyles = makeStyles({
     box: {        
@@ -34,11 +34,22 @@ const useStyles = makeStyles({
     }
 });
 
+
 const Grocerylist= () => {
     const classes = useStyles();
-    const [, setError] = useState('');
-    const [, setLoading] = useState(false);
-    const [grocerylist] = useState([]);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [grocerylist, setGroceryList] = useState([]);
+    const { lists, profile } = useAuth();
+    
+
+    useEffect(() => {
+        if (lists) {
+            console.log(profile)
+            setGroceryList(lists.groceryList);
+            setLoading(false);
+        }
+    }, [lists])
 
     const validationSchema = Yup.object().shape({
         groceryitem: Yup.string()
@@ -46,13 +57,15 @@ const Grocerylist= () => {
     });
 
     const renderGroceryListItems = () => {
-       return grocerylist.map((item: {text: string, complete: boolean}) => {
-            return <GroceryItem item={item} key={item.text} />
-       });
+    //    return grocerylist.map((item: {item: string, complete: boolean}) => {
+    //         console.log('=====>', item)
+    //         return <GroceryItem item={item} key={item.item} />
+    //    });
     };
 
     const initialValues = {
-        groceryitem: ''
+        listItems: grocerylist,
+        addedValue: 'things'
     };
 
     const handleSubmit = useCallback(
@@ -60,18 +73,25 @@ const Grocerylist= () => {
             try {
                 setError('');
                 setLoading(true);
-                await firestore.collection('Users').add({
-                    groceryitems: values.grocerylist
+                await firestore.collection('Lists').add({
+                    groceryitems: values.groceryList
                 });
                 actions.setStatus({ successfulSubmit: 'Successfully added' });
             } catch (error) {
                 actions.setStatus({ submissionError: 'Something went wrong' });
+                console.log(error)
             } finally {
                 console.log('done');
+                setLoading(false);
             }
-            setLoading(false);
         }, []
     );
+
+    if (loading) {
+        return (
+            <Typography>Loading</Typography>
+        )
+    }
 
     return(
         <>
@@ -85,26 +105,40 @@ const Grocerylist= () => {
                         onSubmit={handleSubmit}
                         validationSchema={validationSchema}
                     >
-                        <Form>
-                            <FormikAlert name="successfulSubmit" severity="success" />
-                            <FormikAlert name="submissionError" severity="error" />
-                            <FormikInput
-                                name="groceryitem"
-                                type="text"
-                                placeholder="input item here..." 
-                                variant="outlined"
-                                className={classes.input}
-                            />
-                            <Button type="submit" variant="contained" color="primary">Add</Button>
-                        </Form>
+                        {(formikBag) => (
+                            <Form>
+                                <Card>
+                                    <CardContent>
+                                        <FormikInput 
+                                            name='addedValue'
+                                            variant='outlined'
+                                            className={classes.input}
+                                        />
+                                        <Button type="submit" variant="contained" color="primary">Add</Button>
+                                    </CardContent>
+                                </Card>
+                                <FormikAlert name="successfulSubmit" severity="success" />
+                                <FormikAlert name="submissionError" severity="error" />
+                                <Box>
+                                    {formikBag.values.listItems.map((groceryItem, idx) => {
+                                        console.log('item', groceryItem)
+                                        return (
+                                            <Card key={idx}>
+                                                <CardContent>
+                                                    hello
+                                                    {groceryItem['item']}
+                                                </CardContent>
+                                            </Card>
+                                        )
+                                    })}
+                                
+                                </Box>
+                            </Form>
+                        )}
                     </Formik>
-                    <Card className={classes.card}>
-                        <CardContent>
-                            <React.Fragment>
+                            <>
                                 {renderGroceryListItems()}
-                            </React.Fragment>
-                        </CardContent>
-                    </Card>
+                            </>
                 </Box>
             </Box>
         </>

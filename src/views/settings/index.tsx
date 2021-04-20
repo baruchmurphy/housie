@@ -39,8 +39,8 @@ const useStyles = makeStyles({
 
 const Settings = () => {
     const { currentUser, updatePassword, updateEmail } = useAuth()
-    const [, setLoading] = useState(false);
-    const [, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const history = useHistory();
     const classes = useStyles();
 
@@ -74,6 +74,7 @@ const Settings = () => {
                history.push('/')
            }).catch(()=> {
                setError('failed to update account')
+               console.log(error)
            }).finally(() => {
                setLoading(false)
            })

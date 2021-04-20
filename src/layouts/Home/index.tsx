@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
     AppBar, 
     Toolbar, 
@@ -19,7 +19,12 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { useAuth } from '../../contexts/AuthContext';
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import Finance from '../../views/Pages/finance/finance';
+import Planning from '../../views/Pages/planning/planning';
+import Chores from '../../views/Pages/chores/chores';
+import Lists from '../../views/Pages/lists/lists';
+import Grocerylist from '../../views/Pages/lists/grocerylist/grocerylist';
 
 const drawerWidth = 240;
 
@@ -94,12 +99,37 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const Home = ({ children }: {children: any}) => {
-    const [, setError] = useState("");
+    const [error, setError] = useState("");
     const [anchorEl, setAnchorEl] = useState<any>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [content, setContent] = useState<any>(null)
     const { logout, profile, currentUser } = useAuth();
     const history = useHistory();
     const classes = useStyles();
+
+    useEffect(() => {
+        if(history.location.pathname !== '/home') {
+            switch(history.location.pathname) {
+                case '/home/finance':
+                    setContent(<Finance />)
+                    break;
+                case '/home/chores':
+                    setContent(<Chores />)
+                    break;
+                case '/home/planning':
+                    setContent(<Planning />)
+                    break;
+                case '/home/lists':
+                    setContent(<Lists />)
+                    break;
+                case '/home/lists/grocerylist':
+                    setContent(<Grocerylist />)
+                    break;
+                default: 
+                    setContent(null)
+            }
+        }
+    },[history.location.pathname])
 
     const handleLogout = async () => {
         setError('')
@@ -109,21 +139,26 @@ const Home = ({ children }: {children: any}) => {
             history.push('/login')
         }   catch {
             setError('failed to logout')
+            console.log(error)
         }
     };
 
     const drawerItems = [
         {
-            name: 'Finance'
+            name: 'Finance',
+            to: '/home/finance'
         },
         {
-            name: 'Chores'
+            name: 'Chores',
+            to: '/home/chores'
         },
         {
-            name: 'Planning'
+            name: 'Planning',
+            to: '/home/planning'
         },
         {
-            name: 'Lists'
+            name: 'Lists',
+            to: '/home/lists'
         }
     ];
 
@@ -139,15 +174,15 @@ const Home = ({ children }: {children: any}) => {
         return drawerItems.map(item => {
             return (
                 <div onClick={() => setDrawerOpen(false)} key={item.name}>
-                    <ListItem button>
-                        <ListItemText primary={item.name} />
-                    </ListItem>
+                    <Link to={item.to} style={{ textDecoration: 'none' }}>
+                        <ListItem button>
+                            <ListItemText primary={item.name} />
+                        </ListItem>
+                    </Link>
                 </div>
             );
         });
     };
-
-    console.log(profile, currentUser)
 
     return (
         <div className={classes.root}>
@@ -206,7 +241,7 @@ const Home = ({ children }: {children: any}) => {
                     <Divider />
                 </Drawer>
             </AppBar>
-            <main>{children}</main>
+            <main>{content}</main>
         </div>
     );
 };

@@ -10,7 +10,7 @@ const firebaseConfig = {
     storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGE_SENDER_ID,
     appId: process.env.REACT_APP_FIREBASE_APP_ID,
-};         
+};
 
 try {
     firebase.initializeApp(firebaseConfig);
@@ -23,3 +23,4 @@ export default firebaseConfig;
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 export const database = firebase.database();
+
